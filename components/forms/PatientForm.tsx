@@ -15,6 +15,10 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import CustomFormField from "./CustomFormField";
+import SubmitButton from "./SubmitButton";
+import { useState } from "react";
+import { UserFormValidation } from "@/lib/formValidation";
+import { useRouter } from "next/navigation";
 
 export enum FormFieldType {
 	INPUT = "input",
@@ -26,21 +30,36 @@ export enum FormFieldType {
 	SKELETON = "skeleton",
 }
 
-const formSchema = z.object({
-	username: z.string().min(2).max(50),
-});
-
 const PatientForm = () => {
-	const form = useForm<z.infer<typeof formSchema>>({
-		resolver: zodResolver(formSchema),
+	const [isLoading, setIsLoading] = useState(false);
+	const router = useRouter();
+
+	const form = useForm<z.infer<typeof UserFormValidation>>({
+		resolver: zodResolver(UserFormValidation),
 		defaultValues: {
 			username: "",
+			email: "",
+			phone: "",
 		},
 	});
 
-	function onSubmit(values: z.infer<typeof formSchema>) {
-		console.log(values);
-	}
+	const onSubmit = async ({
+		username,
+		email,
+		phone,
+	}: z.infer<typeof UserFormValidation>) => {
+		setIsLoading(true);
+
+		try {
+			// const userData = {username, email, phone}
+			// const user = await createUser(userData)
+			// if(user){
+			//   router.push(`/patients/${user.$id}/register`)
+			// }
+		} catch (error) {
+			console.log("Patient Form error", error);
+		}
+	};
 
 	return (
 		<Form {...form}>
@@ -61,8 +80,24 @@ const PatientForm = () => {
 					iconSrc='/assets/icons/user.svg'
 					iconAlt='user'
 				/>
+				<CustomFormField
+					control={form.control}
+					fieldType={FormFieldType.INPUT}
+					name='email'
+					label='Email'
+					placeholder='email'
+					iconSrc='/assets/icons/email.svg'
+					iconAlt='email'
+				/>
+				<CustomFormField
+					control={form.control}
+					fieldType={FormFieldType.PHONE_INPUT}
+					name='phone'
+					label='Phone number'
+					placeholder='phone number'
+				/>
 
-				<Button type='submit'>Submit</Button>
+				<SubmitButton isLoading={isLoading}>Get started</SubmitButton>
 			</form>
 		</Form>
 	);
