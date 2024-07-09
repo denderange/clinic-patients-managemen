@@ -1,7 +1,7 @@
 import z from "zod";
 
 export const UserFormValidation = z.object({
-	username: z
+	name: z
 		.string()
 		.min(2, "Name is too short")
 		.max(50, "Please, enter shorter name"),
